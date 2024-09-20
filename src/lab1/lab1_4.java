@@ -6,7 +6,7 @@ import java.util.Queue;
 class lab1_4 {
 
     public static void main(String[] args) {
-        Buffer buffer = new Buffer(5); // Buffer size is 5
+        Buffer buffer = new Buffer(5);
 
         Thread producerThread = new Thread(new Producer(buffer));
         Thread consumerThread = new Thread(new Consumer(buffer));
@@ -32,7 +32,7 @@ class Buffer {
         }
         queue.add(value);
         System.out.println("Производитель " + value);
-        notify(); // Notify consumer that new data is available
+        notify();
     }
 
     public synchronized int consume() throws InterruptedException {
@@ -42,7 +42,7 @@ class Buffer {
         }
         int value = queue.poll();
         System.out.println("Потребитель: " + value);
-        notify(); // Notify producer that space is available
+        notify(); 
         return value;
     }
 }
@@ -60,7 +60,7 @@ class Producer implements Runnable {
             int value = 0;
             while (true) {
                 buffer.produce(value++);
-                Thread.sleep(1000); // Simulate time taken to produce data
+                Thread.sleep(1000); // Время на полученние данных
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -80,7 +80,7 @@ class Consumer implements Runnable {
         try {
             while (true) {
                 buffer.consume();
-                Thread.sleep(1500); // Simulate time taken to consume data
+                Thread.sleep(1500); // время необходимое для использования данных
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
