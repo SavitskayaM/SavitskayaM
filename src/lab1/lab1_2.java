@@ -8,12 +8,12 @@ class DivisibleByTenPrinter implements Runnable {
             for (int i = 0; i <= 100; i++) {
                 if (i % 10 == 0) {
                     System.out.println(i);
-                    Thread.sleep(500); // Pause for 500 milliseconds (0.5 seconds)
+                    Thread.sleep(500); // Пауза в 0,5 секунд
                 }
             }
         } catch (InterruptedException e) {
             System.out.println("Thread was interrupted.");
-            Thread.currentThread().interrupt(); // Restore the interrupted status
+            Thread.currentThread().interrupt(); 
         }
     }
 
