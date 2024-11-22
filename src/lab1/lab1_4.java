@@ -2,65 +2,47 @@ package lab1;
 
 import java.util.LinkedList;
 import java.util.Queue;
-
-class lab1_4 {
-
-    public static void main(String[] args) {
-        Buffer buffer = new Buffer(5);
-
-        Thread producerThread = new Thread(new Producer(buffer));
-        Thread consumerThread = new Thread(new Consumer(buffer));
-
-        producerThread.start();
-        consumerThread.start();
-    }
-}
-
+  
 class Buffer {
-    private Queue<Integer> queue;
-    private int maxSize;
+    private final int capacity;
+    private final Queue<Integer> queue = new LinkedList<>();
 
-    public Buffer(int maxSize) {
-        this.queue = new LinkedList<>();
-        this.maxSize = maxSize;
+    public Buffer (int capacity){
+        this.capacity = capacity;
     }
 
-    public synchronized void produce(int value) throws InterruptedException {
-        while (queue.size() == maxSize) {
-            System.out.println("Буфер заполнен, производитель ждет...");
+    public synchronized void produce (int value) throws InterruptedException {
+        while(queue.size() == capacity){
             wait();
         }
         queue.add(value);
-        System.out.println("Производитель " + value);
+        System.out.println("Производитель сгенерировал: " + value);
         notify();
     }
 
     public synchronized int consume() throws InterruptedException {
-        while (queue.isEmpty()) {
-            System.out.println("Буфер пуст, потребитель ждет...");
+        while (queue.isEmpty()){
             wait();
         }
         int value = queue.poll();
-        System.out.println("Потребитель: " + value);
-        notify(); 
+        System.out.println("Потребитель забрал: " + value);
+        notify();
         return value;
     }
 }
 
-class Producer implements Runnable {
-    private Buffer buffer;
-
-    public Producer(Buffer buffer) {
+class Producer implements Runnable{
+    private final Buffer buffer;
+    public Producer(Buffer buffer){
         this.buffer = buffer;
     }
-
     @Override
-    public void run() {
+    public void run(){
+        int value = 0;
         try {
-            int value = 0;
-            while (true) {
+            while(true){
                 buffer.produce(value++);
-                Thread.sleep(1000); // Время на полученние данных
+                Thread.sleep(500);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -69,21 +51,30 @@ class Producer implements Runnable {
 }
 
 class Consumer implements Runnable {
-    private Buffer buffer;
-
-    public Consumer(Buffer buffer) {
+    private final Buffer buffer;
+    public Consumer(Buffer buffer){
         this.buffer = buffer;
     }
 
     @Override
     public void run() {
         try {
-            while (true) {
+            while (true){
                 buffer.consume();
-                Thread.sleep(1500); // время необходимое для использования данных
+                Thread.sleep(750);
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException e){
             Thread.currentThread().interrupt();
         }
+    }
+}
+
+public class ProducerConsumer {
+    public static void main(String[] args) {
+        Buffer buffer = new Buffer(5);
+        Thread producerThread = new Thread(new Producer(buffer));
+        Thread consumerThread = new Thread(new Consumer(buffer));
+        producerThread.start();
+        consumerThread.start();
     }
 }
